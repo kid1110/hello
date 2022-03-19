@@ -1,4 +1,4 @@
-FROM golang:latest
+FROM alpine
 
 WORKDIR /root
 ADD main main
