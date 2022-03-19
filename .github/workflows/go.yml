@@ -33,6 +33,7 @@ jobs:
           docker tag $(docker images ${{ secrets.REGISTRY }}:$GITHUB_RUN_NUMBER -q) ${{ secrets.REGISTRY }}:latest
           docker push ${{ secrets.REGISTRY }}:latest
       
+<<<<<<< HEAD
  pull-docker:
     needs: [build]
     name: Pull Docker
@@ -54,4 +55,16 @@ jobs:
             docker run -d -p 8081:8081 ${{ secrets.REGISTRY }}:latest
 
 
+=======
+    - name: deploy file to server
+      uses:  wlixcc/SFTP-Deploy-Action@v1.0 
+      with:
+        username: 'root'
+        server: '112.74.93.38'
+        ssh_private_key: ${{secrets.GO_PRIVATE_KEY}}
+        local_path: './main ./Dockerfile'
+        remote_path: '/root/hello'
+>>>>>>> 3c709d4cfd5c72715b7063af0406190d071e16be
+        
+        
         
