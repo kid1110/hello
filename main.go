@@ -6,5 +6,5 @@ func main() {
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		w.Write([]byte("Hello world"))
 	})
-	http.ListenAndServe("localhost:8081", nil)
+	http.ListenAndServe(":8081", nil)
 }
