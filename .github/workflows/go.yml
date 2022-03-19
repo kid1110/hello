@@ -30,7 +30,7 @@ jobs:
         username: 'root'
         server: '112.74.93.38'
         ssh_private_key: ${{secrets.GO_PRIVATE_KEY}}
-        local_path: './main,./Dockerfile'
+        local_path: './main ./Dockerfile'
         remote_path: '/root/hello'
         
         
