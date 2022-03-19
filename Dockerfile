@@ -1,4 +1,4 @@
-FROM alpine
+FROM ubuntu:latest
 
 WORKDIR /root
 ADD main main
