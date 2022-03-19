@@ -23,13 +23,35 @@ jobs:
 
     - name: Test
       run: go test -v main.go
+    
+    - name: Push Docker
+      run: |
+        run: |
+          docker login --username=${{ secrets.USERNAME }} --password ${{ secrets.PASSWORD }} registry.cn-shanghai.aliyuncs.com
+          docker build . -t ${{ secrets.REGISTRY }}:$GITHUB_RUN_NUMBER
+          docker push ${{ secrets.REGISTRY }}:$GITHUB_RUN_NUMBER
+          docker tag $(docker images ${{ secrets.REGISTRY }}:$GITHUB_RUN_NUMBER -q) ${{ secrets.REGISTRY }}:latest
+          docker push ${{ secrets.REGISTRY }}:latest
       
-    - name: deploy file to server
-      uses:  wlixcc/SFTP-Deploy-Action@v1.0 
-      with:
-        username: 'root'
-        server: '112.74.93.38'
-        ssh_private_key: ${{secrets.GO_PRIVATE_KEY}}
-        local_path: './main'
-        remote_path: '/root/hello'
+ pull-docker:
+    needs: [build]
+    name: Pull Docker
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USER }}
+          password: ${{ secrets.PWD }}
+          port: ${{ secrets.PORT }}
+          script: |
+            docker stop $(docker ps --filter ancestor=${{ secrets.REGISTRY }} -q)
+            docker rm -f $(docker ps -a --filter ancestor=${{ secrets.REGISTRY }}:latest -q)
+            docker rmi -f $(docker images  ${{ secrets.REGISTRY }}:latest -q)
+            docker login --username=${{ secrets.USERNAME }} --password ${{ secrets.PASSWORD }} registry.cn-shanghai.aliyuncs.com
+            docker pull ${{ secrets.REGISTRY }}:latest
+            docker run -d -p 8081:8081 ${{ secrets.REGISTRY }}:latest
+
+
         
